@@ -192,25 +192,4 @@ elif export_choice == '3':
 else:
     print("Invalid choice. Skipping export.")
 
-# ==============================================================================
-# EXPORT TO GIF
-# ==============================================================================
-# print("Encoding and saving animation to GIF... (This may take a minute)")
-# writer='pillow' uses the Python Imaging Library to build the GIF
-#ani.save('quantum_tunneling.gif', writer='pillow', fps=60)
-# print("Export complete! Saved as 'quantum_tunneling.gif'")
-
-# ==============================================================================
-# EXPORT TO MP4
-# ==============================================================================
-# print("Encoding and saving animation to MP4... (This may take a minute)")
-# extra_args tells FFmpeg to use high-quality h264 compression
-# ani.save(
-#    'quantum_tunneling.mp4', 
-#    writer='ffmpeg', 
-#    fps=60, 
-#    extra_args=['-vcodec', 'libx264', '-pix_fmt', 'yuv420p']
-#)
-# print("Export complete! Saved as 'quantum_tunneling.mp4'")
-
 plt.show()
