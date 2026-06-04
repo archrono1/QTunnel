@@ -45,7 +45,7 @@ V0 = 1.7 * eV
 V = np.where((X > 0) & (X < a), V0, 0.0)
 
 # Second barrier: a+b < x < 2a+b
-# V = np.where((X > a + b) & (X < a + b + a), V + V0, V)
+V = np.where((X > a + b) & (X < a + b + a), V + V0, V)
 
 # ==============================================================================
 # 3. INITIAL WAVEFUNCTION SETUP (Single Centered Particle)
