@@ -102,6 +102,17 @@ for step in range(1, num_steps + 1):
 print("\nSimulation finished successfully. Rendering animation plot...")
 
 # ==============================================================================
+# 4B. EXPORT PROMPT
+# ==============================================================================
+print("\n" + "="*60)
+print("Export Options:")
+print("  1. GIF (Pillow)")
+print("  2. MP4 (FFmpeg)")
+print("  3. No Export")
+print("="*60)
+export_choice = input("Select export format (1/2/3): ").strip()
+
+# ==============================================================================
 # 5. HSV WAVEFUNCTION VISUALIZATION (Dark Theme Engine)
 # ==============================================================================
 fig, ax = plt.subplots(figsize=(8, 8))
@@ -159,6 +170,27 @@ ani = animation.FuncAnimation(
     interval=16, # 1000ms/intervalms to get fps
     blit=False
 )
+
+# ==============================================================================
+# EXPORT BASED ON USER CHOICE
+# ==============================================================================
+if export_choice == '1':
+    print("Encoding and saving animation to GIF... (This may take a minute)")
+    ani.save('quantum_tunneling.gif', writer='pillow', fps=60)
+    print("Export complete! Saved as 'quantum_tunneling.gif'")
+elif export_choice == '2':
+    print("Encoding and saving animation to MP4... (This may take a minute)")
+    ani.save(
+        'quantum_tunneling.mp4', 
+        writer='ffmpeg', 
+        fps=60, 
+        extra_args=['-vcodec', 'libx264', '-pix_fmt', 'yuv420p']
+    )
+    print("Export complete! Saved as 'quantum_tunneling.mp4'")
+elif export_choice == '3':
+    print("Skipping export.")
+else:
+    print("Invalid choice. Skipping export.")
 
 # ==============================================================================
 # EXPORT TO GIF
