@@ -132,7 +132,7 @@ b2_l, b2_r = (a+b)/Å, (2*a+b)/Å
 # Draw the barriers as high-visibility translucent white blocks with explicit edges
 ax.axvspan(b1_l, b1_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 1 (3 Å Wide)')
 
-# ax.axvspan(b2_l, b2_r, color='#ffffff', alpha=1, linewidth=0.25, label='Barrier 2 (3 Å Wide)')
+ax.axvspan(b2_l, b2_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 2 (3 Å Wide)')
 
 # Viewport
 ax.set_xlim(-300, 300)
@@ -163,10 +163,10 @@ ani = animation.FuncAnimation(
 # ==============================================================================
 # EXPORT TO GIF
 # ==============================================================================
-print("Encoding and saving animation to GIF... (This may take a minute)")
+# print("Encoding and saving animation to GIF... (This may take a minute)")
 # writer='pillow' uses the Python Imaging Library to build the GIF
-ani.save('quantum_tunneling.gif', writer='pillow', fps=60)
-print("Export complete! Saved as 'quantum_tunneling.gif'")
+#ani.save('quantum_tunneling.gif', writer='pillow', fps=60)
+# print("Export complete! Saved as 'quantum_tunneling.gif'")
 
 # ==============================================================================
 # EXPORT TO MP4
