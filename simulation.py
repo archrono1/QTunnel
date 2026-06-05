@@ -23,9 +23,9 @@ print("  128  (coarse, fast)")
 print("  256  (medium)")
 print("  512  (fine, slow)")
 print("="*60)
-N = int(input("Select grid resolution (128/256/512): ").strip())
-while N not in [128, 256, 512]:
-    N = int(input("Invalid choice. Select 128, 256, or 512: ").strip())
+N = int(input("Select grid resolution (256/512): ").strip())
+while N not in [256, 512]:
+    N = int(input("Invalid choice. Select 256, or 512: ").strip())
 
 # ==============================================================================
 # 1. MATPLOTLIB CONFIGURATION (Neon Green on Dark Background)
