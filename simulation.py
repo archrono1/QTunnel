@@ -4,7 +4,22 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.colors import hsv_to_rgb
 
-# Configure Matplotlib globally to use your Neon Green theme on Dark Background
+# ==============================================================================
+# 0. RUNTIME CONFIGURATION
+# ==============================================================================
+print("="*60)
+print("Barrier Configuration:")
+print("  0. No barriers (free propagation)")
+print("  1. Single barrier")
+print("  2. Double barrier")
+print("="*60)
+num_barriers = int(input("Select number of barriers (0/1/2): ").strip())
+while num_barriers not in [0, 1, 2]:
+    num_barriers = int(input("Invalid choice. Select 0, 1, or 2: ").strip())
+
+# ==============================================================================
+# 1. MATPLOTLIB CONFIGURATION (Neon Green on Dark Background)
+# ==============================================================================
 plt.style.use('dark_background')
 plt.rcParams['text.color'] = '#00ff00'          # Neon green text
 plt.rcParams['axes.labelcolor'] = '#00ff00'     # Neon green X/Y axis labels
@@ -16,7 +31,7 @@ plt.rcParams['figure.facecolor'] = '#000000'    # Pure black outer window
 plt.rcParams['axes.edgecolor'] = '#333333'      # Muted gray for axis borders
 
 # ==============================================================================
-# 1. PHYSICAL CONSTANTS (Atomic Units)
+# 2. PHYSICAL CONSTANTS (Atomic Units)
 # ==============================================================================
 hbar = 1.0
 
@@ -28,7 +43,7 @@ m_e = 1.0
 eV = 0.03674932217565499    
 
 # ==============================================================================
-# 2. SIMULATION GRID & POTENTIAL SETUP
+# 3. SIMULATION GRID & POTENTIAL SETUP
 # ==============================================================================
 N = 512
 extent = 700 * Å
@@ -36,19 +51,23 @@ x = np.linspace(-extent/2, extent/2, N, endpoint=False)
 y = np.linspace(-extent/2, extent/2, N, endpoint=False)
 X, Y = np.meshgrid(x, y)
 
-# Define interaction potential (Double Barrier)
+# Define interaction potential
 a = 3 * Å      
 b = 5 * Å      
 V0 = 1.7 * eV  
 
-# First barrier: 0 < x < a
-V = np.where((X > 0) & (X < a), V0, 0.0)
+V = np.zeros((N, N), dtype=float)
 
-# Second barrier: a+b < x < 2a+b
-V = np.where((X > a + b) & (X < a + b + a), V + V0, V)
+if num_barriers >= 1:
+    # First barrier: 0 < x < a
+    V = np.where((X > 0) & (X < a), V0, V)
+
+if num_barriers >= 2:
+    # Second barrier: a+b < x < 2a+b
+    V = np.where((X > a + b) & (X < a + b + a), V + V0, V)
 
 # ==============================================================================
-# 3. INITIAL WAVEFUNCTION SETUP (Single Centered Particle)
+# 4. INITIAL WAVEFUNCTION SETUP (Single Centered Particle)
 # ==============================================================================
 E0 = 0.8 * eV   
 σ = 25.0 * Å    
@@ -58,7 +77,7 @@ k_x0 = np.sqrt(2 * m_e * E0) / hbar
 psi = np.exp(-1/(4 * σ**2) * ((X + 150*Å)**2 + Y**2)) / np.sqrt(2*np.pi * σ**2) * np.exp(1j * k_x0 * X)
 
 # ==============================================================================
-# 4. SPLIT-STEP FOURIER ENGINE & RUNTIME PROGRESS BAR
+# 5. SPLIT-STEP FOURIER ENGINE & RUNTIME PROGRESS BAR
 # ==============================================================================
 total_time = 4000
 num_steps = 8000
@@ -102,7 +121,7 @@ for step in range(1, num_steps + 1):
 print("\nSimulation finished successfully. Rendering animation plot...")
 
 # ==============================================================================
-# 4B. EXPORT PROMPT
+# 5B. EXPORT PROMPT
 # ==============================================================================
 print("\n" + "="*60)
 print("Export Options:")
@@ -113,7 +132,7 @@ print("="*60)
 export_choice = input("Select export format (1/2/3): ").strip()
 
 # ==============================================================================
-# 5. HSV WAVEFUNCTION VISUALIZATION (Dark Theme Engine)
+# 6. HSV WAVEFUNCTION VISUALIZATION (Dark Theme Engine)
 # ==============================================================================
 fig, ax = plt.subplots(figsize=(8, 8))
 max_amp = np.max(np.abs(frames[0])) * 0.3
@@ -137,13 +156,13 @@ img = ax.imshow(psi_to_rgb_dark_bg(frames[0]), extent=spatial_extent_Å, origin=
 # ------------------------------------------------------------------------------
 # POTENTIAL BARRIER OVERLAY (High Contrast against Dark Background)
 # ------------------------------------------------------------------------------
-b1_l, b1_r = 0, a/Å
-b2_l, b2_r = (a+b)/Å, (2*a+b)/Å
+if num_barriers >= 1:
+    b1_l, b1_r = 0, a/Å
+    ax.axvspan(b1_l, b1_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 1 (3 Å Wide)')
 
-# Draw the barriers as high-visibility translucent white blocks with explicit edges
-ax.axvspan(b1_l, b1_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 1 (3 Å Wide)')
-
-ax.axvspan(b2_l, b2_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 2 (3 Å Wide)')
+if num_barriers >= 2:
+    b2_l, b2_r = (a+b)/Å, (2*a+b)/Å
+    ax.axvspan(b2_l, b2_r, color='#00ff00', alpha=0.5, linewidth=0.01, label='Barrier 2 (3 Å Wide)')
 
 # Viewport
 ax.set_xlim(-300, 300)
@@ -151,12 +170,14 @@ ax.set_ylim(-300, 300)
 
 ax.set_xlabel("Spatial Dimension X ($Å$)")
 ax.set_ylabel("Spatial Dimension Y ($Å$)")
-ax.set_title("Quantum Tunneling (Single Barrier)")
+titles = {0: "Free Quantum Propagation (No Barriers)", 1: "Quantum Tunneling (Single Barrier)", 2: "Quantum Tunneling (Double Barrier)"}
+ax.set_title(titles[num_barriers])
 
 # Style the Legend to maintain the Neon Green color aesthetic
-leg = ax.legend(loc='upper right', framealpha=0.2, edgecolor='#333333')
-for text in leg.get_texts():
-    text.set_color('#00ff00')
+if num_barriers > 0:
+    leg = ax.legend(loc='upper right', framealpha=0.2, edgecolor='#333333')
+    for text in leg.get_texts():
+        text.set_color('#00ff00')
 
 def animate_frame(idx):
     img.set_data(psi_to_rgb_dark_bg(frames[idx]))
