@@ -17,6 +17,16 @@ num_barriers = int(input("Select number of barriers (0/1/2): ").strip())
 while num_barriers not in [0, 1, 2]:
     num_barriers = int(input("Invalid choice. Select 0, 1, or 2: ").strip())
 
+print("="*60)
+print("Grid Resolution:")
+print("  128  (coarse, fast)")
+print("  256  (medium)")
+print("  512  (fine, slow)")
+print("="*60)
+N = int(input("Select grid resolution (128/256/512): ").strip())
+while N not in [128, 256, 512]:
+    N = int(input("Invalid choice. Select 128, 256, or 512: ").strip())
+
 # ==============================================================================
 # 1. MATPLOTLIB CONFIGURATION (Neon Green on Dark Background)
 # ==============================================================================
@@ -45,7 +55,6 @@ eV = 0.03674932217565499
 # ==============================================================================
 # 3. SIMULATION GRID & POTENTIAL SETUP
 # ==============================================================================
-N = 512
 extent = 700 * Å
 x = np.linspace(-extent/2, extent/2, N, endpoint=False)
 y = np.linspace(-extent/2, extent/2, N, endpoint=False)
