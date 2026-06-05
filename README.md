@@ -1,22 +1,20 @@
 # Quantum Tunneling Simulation
 
-A fully standalone 2D quantum mechanical simulation of a particle tunneling through potential barriers — with zero physics library dependencies. Built with NumPy and Matplotlib only, with optional GPU acceleration via CuPy.
-
-> Originally based on [QMSolve](https://github.com/quantum-visualizations/qmsolve), rewritten as a self-contained implementation to make the split-step mechanics fully transparent.
+A fully standalone 2D quantum mechanical simulation of a particle tunneling through potential barriers. Built with NumPy and Matplotlib, with optional GPU acceleration via CuPy.
 
 ---
 
 ## What It Simulates
 
-A Gaussian wavepacket travels toward zero, one, or two rectangular potential barriers. All three modes are chosen at runtime.
+A Gaussian wavepacket travels toward zero, one, or two rectangular potential barriers. Number of potential barriers is chosen at runtime.
 
 | Mode | Setup | Physics |
 |---|---|---|
 | Free propagation | No barriers | Wavepacket spreads via dispersion only |
-| Single barrier | One wall at V₀ = 1.7 eV | Standard tunneling — exponential decay through the wall |
-| Double barrier | Two walls separated by a quantum well | Resonant tunneling — transmission spikes at resonance energies |
+| Single barrier | One wall at V₀ = 1.7 eV | Standard tunneling, exponential decay through the wall |
+| Double barrier | Two walls separated by a quantum well | Resonant tunneling, transmission spikes at resonance energies |
 
-The wavepacket travels at **E = 0.8 eV**, which is below the barrier height of **1.7 eV** — classically forbidden to cross, but quantum mechanically able to tunnel through. In double-barrier mode, the well between the two walls supports quasi-bound states at specific resonance energies; when the particle energy matches one of these, transmission probability jumps dramatically. This is the operating principle behind resonant tunneling diodes (RTDs).
+The wavepacket travels at **E = 0.8 eV**, which is below the barrier height of **1.7 eV**, normally unable to cross, but quantum mechanically able to tunnel through. In double-barrier mode, the well between the two walls supports quasi-bound states at specific resonance energies; when the particle energy matches one of these, transmission probability jumps dramatically. This is the operating principle behind resonant tunneling diodes (RTDs).
 
 **Double barrier geometry:**
 
@@ -51,7 +49,7 @@ The wavefunction is rendered using **HSV coloring**:
 - **Hue** → quantum phase `arg(ψ)`
 - **Brightness** → amplitude `|ψ|` (zero amplitude = pure black)
 
-This encodes both the probability density and the phase structure of the wavepacket simultaneously. Green vertical bands mark the potential barriers.
+This encodes both the probability density and the phase structure of the wavepacket simultaneously (and also looks pretty). Green vertical lines mark the potential barriers.
 
 ---
 
@@ -147,7 +145,7 @@ Halving N from 512 to 256 cuts runtime by ~16× with minimal visual difference a
 
 ```
 .
-├── simulation.py      # Main simulation — single file, no physics dependencies
+├── simulation.py     
 ├── requirements.txt
 └── README.md
 ```
