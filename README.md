@@ -2,6 +2,8 @@
 
 A fully standalone 2D quantum mechanical simulation of a particle tunneling through potential barriers. Built with NumPy and Matplotlib, with optional GPU acceleration via CuPy.
 
+![Simulation demo](assets/quantum_tunneling.gif)
+
 ---
 
 ## What It Simulates
