@@ -1,4 +1,4 @@
-# quantum-tunneling
+# QTunnel
 Quantum Tunneling visualised using Python
 
 ##
