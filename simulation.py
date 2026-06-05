@@ -1,5 +1,5 @@
 import sys
-import numpy as np
+import numpy as _np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.colors import hsv_to_rgb
@@ -19,13 +19,26 @@ while num_barriers not in [0, 1, 2]:
 
 print("="*60)
 print("Grid Resolution:")
-print("  128  (coarse, fast)")
 print("  256  (medium)")
 print("  512  (fine, slow)")
 print("="*60)
 N = int(input("Select grid resolution (256/512): ").strip())
 while N not in [256, 512]:
     N = int(input("Invalid choice. Select 256, or 512: ").strip())
+
+print("="*60)
+print("Compute Backend:")
+print("  numpy  (CPU)")
+print("  cupy   (GPU — requires NVIDIA GPU + CUDA)")
+print("="*60)
+backend = input("Select backend (numpy/cupy): ").strip().lower()
+while backend not in ['numpy', 'cupy']:
+    backend = input("Invalid choice. Select numpy or cupy: ").strip().lower()
+
+if backend == 'cupy':
+    import cupy as xp
+else:
+    xp = _np
 
 # ==============================================================================
 # 1. MATPLOTLIB CONFIGURATION (Neon Green on Dark Background)
@@ -56,34 +69,34 @@ eV = 0.03674932217565499
 # 3. SIMULATION GRID & POTENTIAL SETUP
 # ==============================================================================
 extent = 700 * Å
-x = np.linspace(-extent/2, extent/2, N, endpoint=False)
-y = np.linspace(-extent/2, extent/2, N, endpoint=False)
-X, Y = np.meshgrid(x, y)
+x = xp.linspace(-extent/2, extent/2, N, endpoint=False)
+y = xp.linspace(-extent/2, extent/2, N, endpoint=False)
+X, Y = xp.meshgrid(x, y)
 
 # Define interaction potential
 a = 3 * Å      
 b = 5 * Å      
 V0 = 1.7 * eV  
 
-V = np.zeros((N, N), dtype=float)
+V = xp.zeros((N, N), dtype=float)
 
 if num_barriers >= 1:
     # First barrier: 0 < x < a
-    V = np.where((X > 0) & (X < a), V0, V)
+    V = xp.where((X > 0) & (X < a), V0, V)
 
 if num_barriers >= 2:
     # Second barrier: a+b < x < 2a+b
-    V = np.where((X > a + b) & (X < a + b + a), V + V0, V)
+    V = xp.where((X > a + b) & (X < a + b + a), V + V0, V)
 
 # ==============================================================================
 # 4. INITIAL WAVEFUNCTION SETUP (Single Centered Particle)
 # ==============================================================================
 E0 = 0.8 * eV   
 σ = 25.0 * Å    
-k_x0 = np.sqrt(2 * m_e * E0) / hbar
+k_x0 = xp.sqrt(2 * m_e * E0) / hbar
 
 # One particle traveling perfectly along the horizontal center (Y = 0)
-psi = np.exp(-1/(4 * σ**2) * ((X + 150*Å)**2 + Y**2)) / np.sqrt(2*np.pi * σ**2) * np.exp(1j * k_x0 * X)
+psi = xp.exp(-1/(4 * σ**2) * ((X + 150*Å)**2 + Y**2)) / xp.sqrt(2*xp.pi * σ**2) * xp.exp(1j * k_x0 * X)
 
 # ==============================================================================
 # 5. SPLIT-STEP FOURIER ENGINE & RUNTIME PROGRESS BAR
@@ -96,14 +109,14 @@ steps_per_frame = num_steps // store_steps
 
 dx = x[1] - x[0]
 dy = y[1] - y[0]
-kx = 2 * np.pi * np.fft.fftfreq(N, d=dx)
-ky = 2 * np.pi * np.fft.fftfreq(N, d=dy)
-Kx, Ky = np.meshgrid(kx, ky)
+kx = 2 * xp.pi * xp.fft.fftfreq(N, d=dx)
+ky = 2 * xp.pi * xp.fft.fftfreq(N, d=dy)
+Kx, Ky = xp.meshgrid(kx, ky)
 
 T = (hbar**2 / (2 * m_e)) * (Kx**2 + Ky**2)
 
-exp_V = np.exp(-1j * V * (dt / 2.0) / hbar)
-exp_T = np.exp(-1j * T * dt / hbar)
+exp_V = xp.exp(-1j * V * (dt / 2.0) / hbar)
+exp_T = xp.exp(-1j * T * dt / hbar)
 
 frames = []
 frames.append(psi.copy())
@@ -111,9 +124,9 @@ frames.append(psi.copy())
 print("Evaluating time evolution steps:")
 for step in range(1, num_steps + 1):
     psi *= exp_V
-    psi_k = np.fft.fft2(psi)
+    psi_k = xp.fft.fft2(psi)
     psi_k *= exp_T
-    psi = np.fft.ifft2(psi_k)
+    psi = xp.fft.ifft2(psi_k)
     psi *= exp_V
     
     if step % steps_per_frame == 0:
@@ -144,19 +157,21 @@ export_choice = input("Select export format (1/2/3): ").strip()
 # 6. HSV WAVEFUNCTION VISUALIZATION (Dark Theme Engine)
 # ==============================================================================
 fig, ax = plt.subplots(figsize=(8, 8))
-max_amp = np.max(np.abs(frames[0])) * 0.3
+max_amp = xp.max(xp.abs(frames[0])) * 0.3
 
 def psi_to_rgb_dark_bg(psi_matrix, max_amplitude=max_amp):
     """Maps complex fields to a dark background canvas.
     Phase maps to Hue. Amplitude maps to Value/Brightness (0% Amp = Pure Black)."""
-    amplitude = np.abs(psi_matrix)
-    phase = np.angle(psi_matrix)
+    amplitude = xp.abs(psi_matrix)
+    phase = xp.angle(psi_matrix)
     
-    H = (phase + np.pi) / (2 * np.pi)              
-    S = np.ones_like(H)                             # 100% Saturation for vibrant colors
-    V = np.minimum(amplitude / max_amplitude, 1.0) # Low amplitude = Dim/Black
+    H = (phase + xp.pi) / (2 * xp.pi)              
+    S = xp.ones_like(H)                             # 100% Saturation for vibrant colors
+    V = xp.minimum(amplitude / max_amplitude, 1.0) # Low amplitude = Dim/Black
     
-    hsv = np.stack([H, S, V], axis=-1)
+    hsv = xp.stack([H, S, V], axis=-1)
+    if xp is not _np:
+        hsv = hsv.get()
     return hsv_to_rgb(hsv)
 
 spatial_extent_Å = [-extent/(2*Å), extent/(2*Å), -extent/(2*Å), extent/(2*Å)]
