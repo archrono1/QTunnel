@@ -1,0 +1,11 @@
+numpy
+matplotlib
+
+# Optional: GPU acceleration (match your CUDA version)
+# cupy-cuda12x
+
+# Optional: GIF export
+# pillow
+
+# Optional: MP4 export requires FFmpeg installed separately
+# https://ffmpeg.org/download.html
