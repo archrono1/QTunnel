@@ -21,7 +21,7 @@ print("="*60)
 print("Grid Resolution:")
 print("  256  (medium)")
 print("  512  (fine, slow)")
-print("  1024 (high definition)")
+print("  1024 (high definition, slowest)")
 print("="*60)
 N = int(input("Select grid resolution (256/512/1024): ").strip())
 while N not in [256, 512, 1024]:
