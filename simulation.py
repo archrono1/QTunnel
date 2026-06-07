@@ -111,7 +111,7 @@ def normalize(psi_arr):
 
 psi = normalize(psi)
 
-# ==============================================================================
+# ==============================================================================    
 # 5. SPLIT-STEP FOURIER ENGINE
 # ==============================================================================
 # FIX 5: time in explicit atomic units. 4000 a.u. ≈ 97 femtoseconds.
@@ -185,7 +185,7 @@ def psi_to_rgb_dark_bg(psi_matrix):
 
     H = (phase + xp.pi) / (2 * xp.pi)
     S = xp.ones_like(H)
-    V_ch = xp.minimum(amplitude / max_amp, 1.0)
+    V_ch = xp.minimum((amplitude / max_amp) ** 2, 1.0)
 
     hsv = xp.stack([H, S, V_ch], axis=-1)
     if xp is not _np:
